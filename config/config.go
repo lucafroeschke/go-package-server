@@ -5,13 +5,20 @@ import (
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
+	"path/filepath"
 	"reflect"
 	"sync"
 )
 
-const FileName = "config.yaml"
+func init() {
+	envFileName := os.Getenv("CONFIG_FILE")
+	if envFileName != "" {
+		FileName = envFileName
+	}
+}
 
 var (
+	FileName      = "config/config.yaml"
 	config        *Config
 	once          sync.Once
 	defaultConfig = Config{
@@ -47,6 +54,11 @@ type Package struct {
 
 func GetConfig() *Config {
 	once.Do(func() {
+		dir := filepath.Dir(FileName)
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			os.MkdirAll(dir, 0755)
+		}
+
 		data, err := os.ReadFile(FileName)
 		if err != nil {
 			if os.IsNotExist(err) {
