@@ -26,6 +26,7 @@ jobs:
         name: go-package-server
         path: go-package-server
 
-    - uses: ncipollo/release-action@v1
+    - uses: ncipollo/release-action@v1.14.0
       with:
-        artifacts: "go-package-server"
+        artifacts: |
+          go-package-server
