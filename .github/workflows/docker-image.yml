@@ -30,4 +30,4 @@ jobs:
           push: true
           tags: |
             lucafroeschke/go-package-server:latest
-            lucafroeschke/go-package-server:${{ github.ref_name }}
+            lucafroeschke/go-package-server:${{ github.ref_name.replace(/^v/, '') }}
