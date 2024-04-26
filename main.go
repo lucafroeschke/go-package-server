@@ -1,10 +1,21 @@
 package main
 
-import "github.com/lucafroeschke/go-package-server/server"
+import (
+	"github.com/lucafroeschke/go-package-server/cmd"
+	"github.com/lucafroeschke/go-package-server/server"
+	"os"
+)
 
 func main() {
-	err := server.Start()
-	if err != nil {
-		panic(err)
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "build":
+			cmd.RunBuildCommand()
+		}
+	} else {
+		err := server.Start()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
