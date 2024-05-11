@@ -26,7 +26,7 @@ func handleIndexPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, cfg.Packages)
+	err = tmpl.Execute(w, cfg)
 }
 
 func handlePackagePage(w http.ResponseWriter, r *http.Request) {

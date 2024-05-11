@@ -38,11 +38,12 @@ var (
 )
 
 type Config struct {
-	Domain           string    `yaml:"domain"`
-	ListeningAddress string    `yaml:"listening_address"`
-	ListeningPort    int       `yaml:"listening_port"`
-	LogRequests      bool      `yaml:"log_requests"`
-	Packages         []Package `yaml:"packages"`
+	Domain           string     `yaml:"domain"`
+	ListeningAddress string     `yaml:"listening_address"`
+	ListeningPort    int        `yaml:"listening_port"`
+	LogRequests      bool       `yaml:"log_requests"`
+	SiteConfig       SiteConfig `yaml:"site_config"`
+	Packages         []Package  `yaml:"packages"`
 }
 
 type Package struct {
@@ -50,6 +51,17 @@ type Package struct {
 	Repository  string `yaml:"repository"`
 	Description string `yaml:"description"`
 	Vcs         string `yaml:"vcs"`
+}
+
+type SiteConfig struct {
+	Title       string       `yaml:"title"`
+	Description string       `yaml:"description"`
+	FooterLinks []FooterLink `yaml:"footer_links"`
+}
+
+type FooterLink struct {
+	Title string `yaml:"title"`
+	Url   string `yaml:"url"`
 }
 
 func GetConfig() *Config {
