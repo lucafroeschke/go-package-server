@@ -3,8 +3,8 @@ name: Docker Image CI
 on:
   push:
     tags:
-      - '*'
-      
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,14 +13,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set Version
-        id: set_version
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const tag = context.ref
-            const version = tag.replace('v', '')
-            core.setOutput('version', version)
+      - name: Set version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo ::set-output name=version::${VERSION}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -39,4 +35,4 @@ jobs:
           push: true
           tags: |
             lucafroeschke/go-package-server:latest
-            lucafroeschke/go-package-server:${{ steps.set_version.outputs.version }}
+            lucafroeschke/go-package-server:${{ steps.vars.outputs.version }}
