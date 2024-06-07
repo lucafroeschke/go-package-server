@@ -1,17 +1,14 @@
 package server
 
 import (
-	"embed"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/lucafroeschke/go-package-server/config"
 	"github.com/lucafroeschke/go-package-server/logger"
+	"github.com/lucafroeschke/go-package-server/templates"
 	"html/template"
 	"net/http"
 )
-
-//go:embed templates/*
-var templates embed.FS
 
 var (
 	cfg  = config.GetConfig()
@@ -19,7 +16,7 @@ var (
 )
 
 func handleIndexPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(templates, "templates/index.html")
+	tmpl, err := template.ParseFS(templates.Templates, "index.html")
 	if err != nil {
 		logger.WriteLog(logger.ERROR, fmt.Sprintf("Failed to parse template: %v", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -45,7 +42,7 @@ func handlePackagePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFS(templates, "templates/package.html")
+	tmpl, err := template.ParseFS(templates.Templates, "package.html")
 	if err != nil {
 		logger.WriteLog(logger.ERROR, fmt.Sprintf("Failed to parse template: %v", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
