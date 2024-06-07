@@ -1,11 +1,11 @@
-package cmd
+package args
 
 import (
 	"os"
 	"strings"
 )
 
-func getStringArg(arg string) string {
+func GetString(arg string) string {
 	for _, v := range os.Args {
 		if strings.HasPrefix(v, "--"+arg+"=") {
 			split := strings.Split(v, "=")
@@ -17,7 +17,7 @@ func getStringArg(arg string) string {
 	return ""
 }
 
-func getBoolArg(arg string) bool {
+func GetBool(arg string) bool {
 	for _, v := range os.Args {
 		if v == "--"+arg {
 			return true

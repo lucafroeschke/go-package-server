@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/lucafroeschke/go-package-server/args"
 	"github.com/lucafroeschke/go-package-server/config"
 	"github.com/lucafroeschke/go-package-server/server"
 	"github.com/lucafroeschke/go-package-server/templates"
@@ -13,8 +14,8 @@ import (
 func RunBuildCommand() {
 	cfg := config.GetConfig()
 
-	output := getStringArg("output")
-	isCloudflarePages := getBoolArg("cloudflare-pages")
+	output := args.GetString("output")
+	isCloudflarePages := args.GetBool("cloudflare-pages")
 
 	if output == "" {
 		dir, _ := os.Getwd()
