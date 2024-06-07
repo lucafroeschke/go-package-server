@@ -1,24 +1,27 @@
 package config
 
 import (
+	"github.com/lucafroeschke/go-package-server/args"
 	"github.com/lucafroeschke/go-package-server/logger"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"sync"
 )
 
+var FileName = "config.yml"
+
 func init() {
-	envFileName := os.Getenv("CONFIG_FILE")
-	if envFileName != "" {
-		FileName = envFileName
+	configPath := args.GetString("config-path")
+	if configPath != "" {
+		FileName = configPath
 	}
+
+	logger.WriteLog(logger.INFO, "Using config file: "+FileName)
 }
 
 var (
-	FileName      = "config/config.yaml"
 	config        *Config
 	once          sync.Once
 	defaultConfig = Config{
@@ -38,11 +41,12 @@ var (
 )
 
 type Config struct {
-	Domain           string    `yaml:"domain"`
-	ListeningAddress string    `yaml:"listening_address"`
-	ListeningPort    int       `yaml:"listening_port"`
-	LogRequests      bool      `yaml:"log_requests"`
-	Packages         []Package `yaml:"packages"`
+	Domain           string     `yaml:"domain"`
+	ListeningAddress string     `yaml:"listening_address"`
+	ListeningPort    int        `yaml:"listening_port"`
+	LogRequests      bool       `yaml:"log_requests"`
+	SiteConfig       SiteConfig `yaml:"site_config"`
+	Packages         []Package  `yaml:"packages"`
 }
 
 type Package struct {
@@ -50,6 +54,17 @@ type Package struct {
 	Repository  string `yaml:"repository"`
 	Description string `yaml:"description"`
 	Vcs         string `yaml:"vcs"`
+}
+
+type SiteConfig struct {
+	Title       string       `yaml:"title"`
+	Description string       `yaml:"description"`
+	FooterLinks []FooterLink `yaml:"footer_links"`
+}
+
+type FooterLink struct {
+	Title string `yaml:"title"`
+	Url   string `yaml:"url"`
 }
 
 func GetConfig() *Config {
@@ -62,12 +77,9 @@ func GetConfig() *Config {
 		data, err := os.ReadFile(FileName)
 		if err != nil {
 			if os.IsNotExist(err) {
-				config = &defaultConfig
-
-				logger.WriteLog(logger.INFO, "Creating new config file")
-				err := SaveConfig()
+				err := CreateConfig()
 				if err != nil {
-					log.Fatalf("Failed to create config file: %v", err)
+					return
 				}
 			} else {
 				log.Fatalf("Failed to read config file: %v", err)
@@ -77,14 +89,6 @@ func GetConfig() *Config {
 
 			if err != nil {
 				log.Fatalf("Failed to unmarshal config data: %v", err)
-			}
-
-			if checkMissingConfigFields(config) {
-				logger.WriteLog(logger.INFO, "Added missing fields to config")
-				err := SaveConfig()
-				if err != nil {
-					log.Fatalf("Failed to save config file: %v", err)
-				}
 			}
 
 			logger.WriteLog(logger.INFO, "Loaded config file")
@@ -120,19 +124,8 @@ func SaveConfig() error {
 	return nil
 }
 
-func checkMissingConfigFields(config *Config) bool {
-	updated := false
-	configType := reflect.TypeOf(*config)
-	configValue := reflect.ValueOf(config).Elem()
-	defaultConfigValue := reflect.ValueOf(defaultConfig)
-	for i := 0; i < configType.NumField(); i++ {
-		field := configType.Field(i)
-		fieldValue := configValue.Field(i)
-		if reflect.DeepEqual(fieldValue.Interface(), reflect.Zero(field.Type).Interface()) {
-			defaultFieldValue := defaultConfigValue.FieldByName(field.Name)
-			fieldValue.Set(defaultFieldValue)
-			updated = true
-		}
-	}
-	return updated
+func CreateConfig() error {
+	logger.WriteLog(logger.INFO, "Creating config file")
+	config = &defaultConfig
+	return SaveConfig()
 }

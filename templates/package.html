@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="go-import" content="{{.Config.Domain}}/{{.Package.Name}} {{.Package.Vcs}} {{.Package.Repository}}">
+    <meta http-equiv="refresh" content="0; url={{.Package.Repository}}">
     <title>
         {{.Config.Domain}}/{{.Package.Name}}
     </title>
 </head>
+<body>
+    Redirecting to <a href="{{.Package.Repository}}">{{.Package.Repository}}</a>
+</body>
 </html>
