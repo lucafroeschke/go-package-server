@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"sync"
 )
 
@@ -91,14 +90,6 @@ func GetConfig() *Config {
 				log.Fatalf("Failed to unmarshal config data: %v", err)
 			}
 
-			if checkMissingConfigFields(config) {
-				logger.WriteLog(logger.INFO, "Added missing fields to config")
-				err := SaveConfig()
-				if err != nil {
-					log.Fatalf("Failed to save config file: %v", err)
-				}
-			}
-
 			logger.WriteLog(logger.INFO, "Loaded config file")
 		}
 	})
@@ -130,21 +121,4 @@ func SaveConfig() error {
 	}
 
 	return nil
-}
-
-func checkMissingConfigFields(config *Config) bool {
-	updated := false
-	configType := reflect.TypeOf(*config)
-	configValue := reflect.ValueOf(config).Elem()
-	defaultConfigValue := reflect.ValueOf(defaultConfig)
-	for i := 0; i < configType.NumField(); i++ {
-		field := configType.Field(i)
-		fieldValue := configValue.Field(i)
-		if reflect.DeepEqual(fieldValue.Interface(), reflect.Zero(field.Type).Interface()) {
-			defaultFieldValue := defaultConfigValue.FieldByName(field.Name)
-			fieldValue.Set(defaultFieldValue)
-			updated = true
-		}
-	}
-	return updated
 }
