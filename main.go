@@ -11,6 +11,8 @@ func main() {
 		switch os.Args[1] {
 		case "build":
 			cmd.RunBuildCommand()
+		case "config":
+			cmd.RunConfigCommand()
 		}
 	} else {
 		err := server.Start()

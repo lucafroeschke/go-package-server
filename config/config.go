@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/lucafroeschke/go-package-server/args"
 	"github.com/lucafroeschke/go-package-server/logger"
 	"gopkg.in/yaml.v2"
 	"log"
@@ -9,15 +10,18 @@ import (
 	"sync"
 )
 
+var FileName = "config.yml"
+
 func init() {
-	envFileName := os.Getenv("CONFIG_FILE")
-	if envFileName != "" {
-		FileName = envFileName
+	configPath := args.GetString("config-path")
+	if configPath != "" {
+		FileName = configPath
 	}
+
+	logger.WriteLog(logger.INFO, "Using config file: "+FileName)
 }
 
 var (
-	FileName      = "config/config.yaml"
 	config        *Config
 	once          sync.Once
 	defaultConfig = Config{
@@ -73,12 +77,9 @@ func GetConfig() *Config {
 		data, err := os.ReadFile(FileName)
 		if err != nil {
 			if os.IsNotExist(err) {
-				config = &defaultConfig
-
-				logger.WriteLog(logger.INFO, "Creating new config file")
-				err := SaveConfig()
+				err := CreateConfig()
 				if err != nil {
-					log.Fatalf("Failed to create config file: %v", err)
+					return
 				}
 			} else {
 				log.Fatalf("Failed to read config file: %v", err)
@@ -121,4 +122,10 @@ func SaveConfig() error {
 	}
 
 	return nil
+}
+
+func CreateConfig() error {
+	logger.WriteLog(logger.INFO, "Creating config file")
+	config = &defaultConfig
+	return SaveConfig()
 }
