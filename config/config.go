@@ -1,13 +1,14 @@
 package config
 
 import (
-	"github.com/lucafroeschke/go-package-server/args"
-	"github.com/lucafroeschke/go-package-server/logger"
-	"gopkg.in/yaml.v2"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/lucafroeschke/go-package-server/args"
+	"github.com/lucafroeschke/go-package-server/logger"
+	"gopkg.in/yaml.v2"
 )
 
 var FileName = "config.yml"
@@ -45,15 +46,17 @@ type Config struct {
 	ListeningAddress string     `yaml:"listening_address"`
 	ListeningPort    int        `yaml:"listening_port"`
 	LogRequests      bool       `yaml:"log_requests"`
+	DisableGoDoc     bool       `yaml:"disable_go_doc"`
 	SiteConfig       SiteConfig `yaml:"site_config"`
 	Packages         []Package  `yaml:"packages"`
 }
 
 type Package struct {
-	Name        string `yaml:"name"`
-	Repository  string `yaml:"repository"`
-	Description string `yaml:"description"`
-	Vcs         string `yaml:"vcs"`
+	Name         string `yaml:"name"`
+	Repository   string `yaml:"repository"`
+	Description  string `yaml:"description"`
+	Vcs          string `yaml:"vcs"`
+	DisableGoDoc bool   `yaml:"disable_go_doc"`
 }
 
 type SiteConfig struct {
@@ -96,6 +99,11 @@ func GetConfig() *Config {
 	})
 
 	return config
+}
+
+// SetConfig sets the configuration manually. This is primarily used for testing.
+func SetConfig(c *Config) {
+	config = c
 }
 
 func GetPackage(name string) (*Package, bool) {
