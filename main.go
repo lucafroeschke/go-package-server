@@ -1,9 +1,11 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/lucafroeschke/go-package-server/cmd"
 	"github.com/lucafroeschke/go-package-server/server"
-	"os"
 )
 
 func main() {
@@ -17,7 +19,7 @@ func main() {
 	} else {
 		err := server.Start()
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 }
